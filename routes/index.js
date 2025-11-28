@@ -16,4 +16,6 @@ router.get('/mail', function(req, res, next) {
   res.render('mail', { title: 'Mail Page' });
 });
 
+
+
 module.exports = router;
