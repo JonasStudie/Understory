@@ -75,8 +75,21 @@ db.serialize(() => {
     } else {
       console.log('Succes adding event_reviews data');
     }
-    
   });
+});
+
+db.serialize(() => {
+  db.run(`CREATE TABLE IF NOT EXISTS registrations (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    event_id INTEGER NOT NULL,
+    full_name TEXT NOT NULL,
+    phone TEXT NOT NULL,
+    email TEXT NOT NULL,
+    event_date TEXT NOT NULL,
+    sms_reminder INTEGER DEFAULT 0,
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (event_id) REFERENCES reviews(id)
+  )`);
 });
 
         db.close();
