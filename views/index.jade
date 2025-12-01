@@ -1,6 +1,8 @@
 extends layout
 
 block content
+  .top-bar
+    a.button.top-logout(href='/auth/logout', style='float:right;') Log ud
   h1= title
   p Welcome to #{title}
   a(href='/phone')

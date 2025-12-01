@@ -1,0 +1,13 @@
+extends layout
+
+block content
+  h1 Bekræft din email
+  p Vi har sendt en 6-cifret kode til din email. Indtast den herunder for at bekræfte din konto.
+  form(action='/auth/verify' method='POST')
+    div
+      label(for='code') Bekræftelseskode:
+      input(type='text' name='code' id='code' maxlength='6' required)
+    button(type='submit') Bekræft
+  if error
+    p(style='color:red')= error
+  a(href='/auth/login') Tilbage til login

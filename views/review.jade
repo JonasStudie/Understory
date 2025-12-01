@@ -7,11 +7,12 @@ block content
   if reviews && reviews.length
     .cards
       each review in reviews
-        a.card(href='/review/' + review.id)
-          h2= review.evnt_name
-          p.company= review.company_name
-          p.snippet= review.short_review
-          p.rating= '⭐ ' + review.avg_rating+'/5' + ' (' + review.review_count + ' anmeldelser)'
+        if review.review_count > 0
+          a.card(href='/review/' + review.id)
+            h2= review.evnt_name
+            p.company= review.company_name
+            p.snippet= review.short_review
+            p.rating= '⭐ ' + review.avg_rating+'/5' + ' (' + review.review_count + ' anmeldelser)'
   else
     p Der er ingen anmeldelser endnu.
-    
+
