@@ -23,11 +23,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-<<<<<<< HEAD
 // Session middleware
-=======
-
->>>>>>> 2c4fcecc52edc419d0d006c7451ef03dd60699c7
 app.use(session({
   secret: 'your_secret_key',
   resave: false,
@@ -36,30 +32,8 @@ app.use(session({
 
 // Require login for all routes except a whitelist (auth, static, public pages)
 app.use((req, res, next) => {
-<<<<<<< HEAD
   if (req.session && req.session.userId) {
     return next();
-=======
-  if (!req.session || !req.session.userId) {
-    if (
-      req.path.startsWith('/auth') ||
-      req.path.startsWith('/stylesheets') ||
-      req.path.startsWith('/public')
-    ) {
-      return next();
-    }
-    return res.redirect('/auth/login');
-  }
-  next();
-});
-
-// Middleware: require login for all except auth
-app.use((req, res, next) => {
-  if (!req.session || !req.session.userId) {
-    if (!req.path.startsWith('/auth')) {
-      return res.redirect('/auth/login');
-    }
->>>>>>> 2c4fcecc52edc419d0d006c7451ef03dd60699c7
   }
 
   // Only allow auth routes and static assets when not authenticated
@@ -73,11 +47,6 @@ app.use((req, res, next) => {
   return res.redirect('/auth/login');
 });
 
-<<<<<<< HEAD
-=======
-app.use('/auth', authRouter);
-
->>>>>>> 2c4fcecc52edc419d0d006c7451ef03dd60699c7
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/review', reviewRouter);
