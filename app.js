@@ -22,6 +22,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+<<<<<<< Updated upstream
 app.use(session({
   secret: 'your_secret_key',
   resave: false,
@@ -39,14 +40,26 @@ app.use((req, res, next) => {
       return next();
     }
     return res.redirect('/auth/login');
+=======
+// Middleware: require login for all except auth
+app.use((req, res, next) => {
+  if (!req.session || !req.session.userId) {
+    if (!req.path.startsWith('/auth')) {
+      return res.redirect('/auth/login');
+    }
+>>>>>>> Stashed changes
   }
   next();
 });
 
+<<<<<<< Updated upstream
 app.use('/auth', authRouter);
+=======
+>>>>>>> Stashed changes
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/review', reviewRouter);
+app.use('/auth', authRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

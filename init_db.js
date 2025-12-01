@@ -12,6 +12,18 @@ db.serialize(() => {
   )`);
 });
 
+db.serialize(() => {
+  db.run(`CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    email TEXT UNIQUE NOT NULL,
+    first_name TEXT NOT NULL,
+    password_hash TEXT NOT NULL,
+    is_verified INTEGER DEFAULT 0,
+    verification_code TEXT,
+    verification_expires INTEGER
+  )`);
+});
+
 const events = [
   { evnt_name: 'Whisey Smagning', company_name: 'Copenhagen Distillery', short_review: 'Kom og smag Whiskey!'},
   { evnt_name: 'Gin Smagning', company_name: 'Copenhagen Distillery', short_review: 'Kom og smag Gin!'},
