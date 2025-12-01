@@ -12,6 +12,10 @@ const client = twilio(accountSid, authToken);
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
+  // Require login for home page
+  if (!req.session || !req.session.userId) {
+    return res.redirect('/auth/login');
+  }
   res.render('index', { title: 'Express123' });
 });
 
