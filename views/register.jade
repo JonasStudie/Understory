@@ -1,0 +1,19 @@
+extends layout
+
+block content
+  h1 Opret ny profil
+  form(action='/auth/register' method='POST')
+    div
+      label(for='email') Email:
+      input(type='email' name='email' id='email' required)
+    div
+      label(for='first_name') Fornavn:
+      input(type='text' name='first_name' id='first_name' required)
+    div
+      label(for='password') Adgangskode:
+      input(type='password' name='password' id='password' required)
+      p Mindst 8 tegn, 1 stort bogstav og 1 tal
+    button(type='submit') Opret profil
+  if error
+    p(style='color:red')= error
+  a(href='/auth/login') Tilbage til login

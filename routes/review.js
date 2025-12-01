@@ -57,7 +57,9 @@ router.get('/:id', function(req, res, next) {
         res.render('watch_reviews', {
           title: 'Review Detail',
           review: row,
-          eventReviews: reviewRows
+          eventReviews: reviewRows,
+          firstName: req.session.firstName,
+          user: req.session
         });
       }
     );

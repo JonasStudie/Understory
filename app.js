@@ -3,10 +3,12 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var session = require('express-session');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var reviewRouter = require('./routes/review');
+var authRouter = require('./routes/auth');
 
 var app = express();
 
@@ -20,6 +22,28 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use(session({
+  secret: 'your_secret_key',
+  resave: false,
+  saveUninitialized: false
+}));
+
+// Require login for all routes except /auth/* and static files
+app.use((req, res, next) => {
+  if (!req.session || !req.session.userId) {
+    if (
+      req.path.startsWith('/auth') ||
+      req.path.startsWith('/stylesheets') ||
+      req.path.startsWith('/public')
+    ) {
+      return next();
+    }
+    return res.redirect('/auth/login');
+  }
+  next();
+});
+
+app.use('/auth', authRouter);
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/review', reviewRouter);
