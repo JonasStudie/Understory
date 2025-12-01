@@ -23,9 +23,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
+
 app.use(session({
   secret: 'your_secret_key',
   resave: false,
@@ -43,38 +41,22 @@ app.use((req, res, next) => {
       return next();
     }
     return res.redirect('/auth/login');
-=======
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
+  }
+  next();
+});
+
 // Middleware: require login for all except auth
 app.use((req, res, next) => {
   if (!req.session || !req.session.userId) {
     if (!req.path.startsWith('/auth')) {
       return res.redirect('/auth/login');
     }
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
   }
   next();
 });
 
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
 app.use('/auth', authRouter);
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
+
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/review', reviewRouter);
