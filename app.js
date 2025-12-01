@@ -1,4 +1,4 @@
-var createError = require('http-errors');
+﻿var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
@@ -23,15 +23,23 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+<<<<<<< HEAD
+// Session middleware
+=======
 
+>>>>>>> 2c4fcecc52edc419d0d006c7451ef03dd60699c7
 app.use(session({
   secret: 'your_secret_key',
   resave: false,
   saveUninitialized: false
 }));
 
-// Require login for all routes except /auth/* and static files
+// Require login for all routes except a whitelist (auth, static, public pages)
 app.use((req, res, next) => {
+<<<<<<< HEAD
+  if (req.session && req.session.userId) {
+    return next();
+=======
   if (!req.session || !req.session.userId) {
     if (
       req.path.startsWith('/auth') ||
@@ -51,12 +59,25 @@ app.use((req, res, next) => {
     if (!req.path.startsWith('/auth')) {
       return res.redirect('/auth/login');
     }
+>>>>>>> 2c4fcecc52edc419d0d006c7451ef03dd60699c7
   }
-  next();
+
+  // Only allow auth routes and static assets when not authenticated
+  const isPublic = req.path.startsWith('/auth') ||
+    req.path.startsWith('/stylesheets') ||
+    req.path.startsWith('/public') ||
+    req.path.startsWith('/favicon');
+
+  if (isPublic) return next();
+
+  return res.redirect('/auth/login');
 });
 
+<<<<<<< HEAD
+=======
 app.use('/auth', authRouter);
 
+>>>>>>> 2c4fcecc52edc419d0d006c7451ef03dd60699c7
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/review', reviewRouter);
