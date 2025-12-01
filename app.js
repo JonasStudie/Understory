@@ -24,6 +24,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 app.use(session({
   secret: 'your_secret_key',
   resave: false,
@@ -44,6 +45,8 @@ app.use((req, res, next) => {
 =======
 =======
 >>>>>>> Stashed changes
+=======
+>>>>>>> Stashed changes
 // Middleware: require login for all except auth
 app.use((req, res, next) => {
   if (!req.session || !req.session.userId) {
@@ -51,6 +54,9 @@ app.use((req, res, next) => {
       return res.redirect('/auth/login');
     }
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
@@ -60,7 +66,10 @@ app.use((req, res, next) => {
 
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 app.use('/auth', authRouter);
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
 =======
