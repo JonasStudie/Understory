@@ -10,6 +10,7 @@ const db = new sqlite3.Database(path.join(__dirname, '..', 'mydb.sqlite'));
 // Helper: send email
 async function sendVerificationEmail(email, code) {
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   let transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: { user: 'understory.foo@gmail.com', pass: 'xvfhtazjnsfhoowe' }
@@ -26,6 +27,8 @@ async function sendVerificationEmail(email, code) {
     console.error('Error sending verification email:', err);
   }
 =======
+=======
+>>>>>>> Stashed changes
   // Use your SMTP config here
   let transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
@@ -39,6 +42,9 @@ async function sendVerificationEmail(email, code) {
     subject: 'Din bekræftelseskode',
     text: `Din kode er: ${code}`
   });
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 }
 
@@ -69,6 +75,7 @@ router.post('/login', requireNotLoggedIn, (req, res) => {
   db.get('SELECT * FROM users WHERE email = ?', [email], async (err, user) => {
     if (err || !user) return res.render('login', { error: 'Forkert email eller adgangskode' });
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     if (!user.is_verified) {
       // Generate new code and expiry
       const code = ('' + Math.floor(100000 + Math.random() * 900000));
@@ -83,12 +90,19 @@ router.post('/login', requireNotLoggedIn, (req, res) => {
 =======
     if (!user.is_verified) return res.redirect('/auth/verify?email=' + encodeURIComponent(email));
 >>>>>>> Stashed changes
+=======
+    if (!user.is_verified) return res.redirect('/auth/verify?email=' + encodeURIComponent(email));
+>>>>>>> Stashed changes
     const match = await bcrypt.compare(password, user.password_hash);
     if (!match) return res.render('login', { error: 'Forkert email eller adgangskode' });
     req.session.userId = user.id;
     req.session.firstName = user.first_name;
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     res.redirect('/');
+=======
+    res.redirect('/review');
+>>>>>>> Stashed changes
 =======
     res.redirect('/review');
 >>>>>>> Stashed changes
@@ -110,17 +124,23 @@ router.post('/register', requireNotLoggedIn, async (req, res) => {
   const code = ('' + Math.floor(100000 + Math.random() * 900000));
   const expires = Date.now() + 5 * 60 * 1000;
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   // Insert user with is_verified=0, so user exists before verification
   db.run('INSERT INTO users (email, first_name, password_hash, is_verified, verification_code, verification_expires) VALUES (?, ?, ?, 0, ?, ?)',
     [email, first_name, hash, code, expires], async function(err) {
       if (err) return res.render('register', { error: 'Email findes allerede.' });
       await sendVerificationEmail(email, code);
 =======
+=======
+>>>>>>> Stashed changes
   db.run('INSERT INTO users (email, first_name, password_hash, verification_code, verification_expires) VALUES (?, ?, ?, ?, ?)',
     [email, first_name, hash, code, expires], async function(err) {
       if (err) return res.render('register', { error: 'Email findes allerede.' });
       await sendVerificationEmail(email, code);
       // Redirect to verify page with email in query
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
       res.redirect('/auth/verify?email=' + encodeURIComponent(email));
     });
@@ -128,6 +148,7 @@ router.post('/register', requireNotLoggedIn, async (req, res) => {
 
 // GET verify
 router.get('/verify', requireNotLoggedIn, (req, res) => {
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
   // Save email in session for verification flow
   if (req.query.email) {
@@ -137,10 +158,14 @@ router.get('/verify', requireNotLoggedIn, (req, res) => {
 =======
   res.render('verify', { email: req.query.email });
 >>>>>>> Stashed changes
+=======
+  res.render('verify', { email: req.query.email });
+>>>>>>> Stashed changes
 });
 
 // POST verify
 router.post('/verify', requireNotLoggedIn, (req, res) => {
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
   // Always use email from session for verification
   const email = req.session.verifyEmail;
@@ -161,14 +186,23 @@ router.post('/verify', requireNotLoggedIn, (req, res) => {
   db.get('SELECT * FROM users WHERE email = ?', [email], (err, user) => {
     if (err || !user) return res.render('verify', { error: 'Bruger ikke fundet', email });
 >>>>>>> Stashed changes
+=======
+  const { email, code } = { email: req.query.email, code: req.body.code };
+  db.get('SELECT * FROM users WHERE email = ?', [email], (err, user) => {
+    if (err || !user) return res.render('verify', { error: 'Bruger ikke fundet', email });
+>>>>>>> Stashed changes
     if (user.is_verified) return res.redirect('/auth/login');
     if (user.verification_code !== code) return res.render('verify', { error: 'Forkert kode', email });
     if (Date.now() > user.verification_expires) return res.render('verify', { error: 'Koden er udløbet', email });
     db.run('UPDATE users SET is_verified = 1, verification_code = NULL, verification_expires = NULL WHERE id = ?', [user.id], err2 => {
       if (err2) return res.render('verify', { error: 'Fejl ved bekræftelse', email });
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
       // Clear session verifyEmail after success
       req.session.verifyEmail = null;
+=======
+      // After successful verification, redirect to login with a message
+>>>>>>> Stashed changes
 =======
       // After successful verification, redirect to login with a message
 >>>>>>> Stashed changes
