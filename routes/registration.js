@@ -12,7 +12,7 @@ router.get('/:id', function(req, res, next) {
     if (err) return next(err);
     if (!row) return res.status(404).send('Event ikke fundet');
 
-    res.render('register', {title: 'Tilmelding', eventId: id, event: row});
+    res.render('registerevent', {title: 'Tilmelding', eventId: id, event: row});
   });
 });
 

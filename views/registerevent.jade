@@ -1,0 +1,42 @@
+extends layout
+
+block content
+  h1= title
+  p Udfyld formularen herunder for at tilmelde dig begivenheden.
+
+  //- Viser hvilken begivenhed man tilmelder sig
+  if event
+    h2= event.evnt_name
+    small Virksomhed: #{event.company_name}
+    hr
+
+  form(action='/registration/' + eventId method='POST')
+
+    div.form-group
+      label(for='full_name') Fulde navn:
+      input(type='text' name='full_name' id='full_name' required placeholder='Fx Mads Jensen')
+
+
+    div.form-group
+      label(for='phone') Telefonnummer:
+      input(type='tel' name='phone' id='phone' required placeholder='Fx 22557799')
+
+    div.form-group
+      label(for='email') Email:
+      input(type='email' name='email' id='email' required placeholder='din@email.dk')
+
+    div.form-group
+      label(for='event_date') Dato for begivenhed:
+      input(type='date' name='event_date' id='event_date' required)
+
+    div.form-group 
+        label
+            input(type='checkbox' name='sms_reminder' value='1')
+            |  Jeg ønsker at modtage en SMS påmindelse dagen før begivenheden.
+    input(type='hidden' name='eventId' value=eventId)
+
+    button.button(type='submit') Tilmeld
+
+  br
+  a(href='/review') Tilbage til oversigten
+extends layout
