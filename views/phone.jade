@@ -3,3 +3,13 @@ extends layout
 block content
   h1= title
   p This is the phone page.
+  form(method='POST', action='/send-message')
+    div
+      label(for='name') Name:
+      input(type='text', id='name', name='name', required)
+    div
+      label(for='phone') Phone Number:
+      input(type='tel', id='phone', name='phone', required)
+    button(type='submit') Send mig meddelelse
+  a(href='/')
+    button Tilbage til menu
