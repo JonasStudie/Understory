@@ -156,3 +156,122 @@ button:hover {
   margin-top: 10px;
 }
 
+/* Registration form layout */
+
+form {
+  max-width: 500px;
+  background: #f8f8f8;
+  padding: 20px 22px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  margin-top: 16px;
+}
+
+body form {
+  margin-bottom: 24px;
+}
+
+/* overskrifter på siden */
+h1 {
+  margin-bottom: 6px;
+}
+
+h2 {
+  margin: 0 0 4px 0;
+}
+
+small {
+  color: #666;
+}
+
+/* Formularfelter */
+
+.form-group {
+  margin-bottom: 12px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: #333;
+}
+
+.form-group input[type="text"],
+.form-group input[type="tel"],
+.form-group input[type="email"],
+.form-group input[type="date"],
+.form-group textarea {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  border-color: #0b6efd;
+  box-shadow: 0 0 0 2px rgba(11,110,253,0.15);
+}
+
+/* placeholder-tekst lidt lysere */
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+  color: #aaa;
+}
+
+/* textarea lidt højere */
+.form-group textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+/* SMS-påmindelses checkbox */
+
+.form-group label input[type="checkbox"] {
+  margin-right: 6px;
+}
+
+.form-group label input[type="checkbox"] + span {
+  vertical-align: middle;
+}
+
+/*  Knapper  */
+
+form .button,
+form button.button,
+form button[type="submit"] {
+  margin-top: 8px;
+  padding: 10px 18px;
+  border-radius: 6px;
+  border: 1px solid #0b6efd;
+  background: #0b6efd;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+}
+
+form .button:hover,
+form button.button:hover,
+form button[type="submit"]:hover {
+  background: #0951c6;
+  border-color: #0951c6;
+}
+
+/* link tilbage til oversigten */
+a[href="/review"] {
+  font-size: 14px;
+  text-decoration: underline;
+  color: #444;
+}
+
+a[href="/review"]:hover {
+  color: #000;
+}
