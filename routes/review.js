@@ -2,6 +2,11 @@ const express = require('express');
 const router = express.Router();
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
+// cloudinary opsætning
+const multer = require('multer');
+const upload = multer({ dest: 'uploads/' }); // bruges som midlertidig mappe
+const cloudinary = require('../config/cloudinary');
+
 
 const db = new sqlite3.Database(path.join(__dirname, '..', 'mydb.sqlite'));
 
@@ -66,29 +71,53 @@ router.get('/:id', function(req, res, next) {
   });
 });
 
-router.post('/:id', function(req, res, next) {
+router.post('/:id', upload.single('image'), function(req, res, next) {
   const eventId = req.params.id;
   const { first_name, experience_date, rating, comment } = req.body;
 
-  db.run(
-    `
-    INSERT INTO event_reviews (event_id, first_name, experience_date, rating, comment)
-    VALUES (?, ?, ?, ?, ?)
-  `,
-    [eventId, first_name, experience_date, rating, comment],
-    function(err) {
-      if (err) {
-        console.error(err);
-        return next(err);
+  console.log('Modtog anmeldelse for event', eventId);
+  console.log('Body:', req.body);
+  console.log('File:', req.file);
+
+  function insertReview(imageUrl) {
+    db.run(
+      `
+      INSERT INTO event_reviews (event_id, first_name, experience_date, rating, comment, image_url)
+      VALUES (?, ?, ?, ?, ?, ?)
+      `,
+      [eventId, first_name, experience_date, rating, comment, imageUrl],
+      function(err) {
+        if (err) {
+          console.error('Fejl ved insertReview:', err);
+          return next(err);
+        }
+
+        console.log('Ny anmeldelse indsat med id:', this.lastID, 'imageUrl=', imageUrl);
+        res.redirect('/review/' + eventId);
       }
+    );
+  }
 
-      console.log('Ny anmeldelse indsat med id:', this.lastID);
-      res.redirect('/review/' + eventId);
-    }
-  );
+  if (!req.file) {
+    console.log('Ingen fil uploadet, gemmer anmeldelse uden billede');
+    insertReview(null);
+    return;
+  }
+
+  const filePath = req.file.path;
+  console.log('Uploader til Cloudinary fra path:', filePath);
+
+  cloudinary.uploader.upload(filePath, { folder: 'understory_reviews' })
+    .then(result => {
+      const imageUrl = result.secure_url;
+      console.log('Cloudinary upload OK, url:', imageUrl);
+      insertReview(imageUrl);
+    })
+    .catch(err => {
+      console.error('Cloudinary upload fejlede:', err);
+      insertReview(null); // fallback uden billede
+    });
 });
-
-
 
 
 module.exports = router;
