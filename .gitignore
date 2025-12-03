@@ -3,3 +3,6 @@ npm-debug.log
 .DS_Store
 .*env
 cloudinary.env
+server.key
+server.crt
+server.csr

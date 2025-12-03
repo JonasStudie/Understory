@@ -7,28 +7,54 @@ const nodemailer = require('nodemailer');
 
 const db = new sqlite3.Database(path.join(__dirname, '..', 'mydb.sqlite'));
 
-// Helper: send email using environment-configured SMTP (med fallback til hårdkodet gmail)
-async function sendVerificationEmail(email, code) {
-  const smtpUser =
-    process.env.SMTP_USER ||
-    process.env.TWILIO_EMAIL ||
-    process.env.SMTP_EMAIL ||
-    'understory.foo@gmail.com';
+// Simple promise-wrappers til sqlite3
+function dbGet(sql, params = []) {
+  return new Promise((resolve, reject) => {
+    db.get(sql, params, (err, row) => {
+      if (err) return reject(err);
+      resolve(row);
+    });
+  });
+}
 
-  const smtpPass =
-    process.env.SMTP_PASS ||
-    process.env.SMTP_PASSWORD ||
-    'xvfhtazjnsfhoowe';
+function dbRun(sql, params = []) {
+  return new Promise((resolve, reject) => {
+    db.run(sql, params, function (err) {
+      if (err) return reject(err);
+      resolve(this); // this.lastID, this.changes hvis du skal bruge det
+    });
+  });
+}
 
-  if (!smtpUser || !smtpPass) {
-    console.warn('SMTP credentials not set; skipping sending verification email for', email);
-    return;
-  }
+// SMTP config og transporter (oprettes kun hvis credentials findes)
+const smtpUser =
+  process.env.SMTP_USER ||
+  process.env.TWILIO_EMAIL ||
+  process.env.SMTP_EMAIL ||
+  'understory.foo@gmail.com';
 
-  const transporter = nodemailer.createTransport({
+const smtpPass =
+  process.env.SMTP_PASS ||
+  process.env.SMTP_PASSWORD ||
+  'xvfhtazjnsfhoowe';
+
+let transporter = null;
+
+if (smtpUser && smtpPass) {
+  transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: { user: smtpUser, pass: smtpPass }
   });
+} else {
+  console.warn('SMTP credentials not set; verification emails will not be sent');
+}
+
+// Helper: send verification email
+async function sendVerificationEmail(email, code) {
+  if (!transporter) {
+    console.warn('SMTP transporter not configured; skipping sending verification email for', email);
+    return;
+  }
 
   try {
     const info = await transporter.sendMail({
@@ -43,7 +69,7 @@ async function sendVerificationEmail(email, code) {
   }
 }
 
-// Middleware: require not logged in
+// Middleware: kræver at man IKKE er logget ind
 function requireNotLoggedIn(req, res, next) {
   if (req.session && req.session.userId) {
     return res.redirect('/review');
@@ -51,17 +77,19 @@ function requireNotLoggedIn(req, res, next) {
   next();
 }
 
-// GET login
+// GET /login
 router.get('/login', requireNotLoggedIn, (req, res) => {
   res.render('login', { error: null });
 });
 
-// POST login
-router.post('/login', requireNotLoggedIn, (req, res) => {
+// POST /login
+router.post('/login', requireNotLoggedIn, async (req, res, next) => {
   const { email, password } = req.body;
 
-  db.get('SELECT * FROM users WHERE email = ?', [email], async (err, user) => {
-    if (err || !user) {
+  try {
+    const user = await dbGet('SELECT * FROM users WHERE email = ?', [email]);
+
+    if (!user) {
       return res.render('login', { error: 'Forkert email eller adgangskode' });
     }
 
@@ -70,71 +98,82 @@ router.post('/login', requireNotLoggedIn, (req, res) => {
       return res.render('login', { error: 'Forkert email eller adgangskode' });
     }
 
-    // Hvis brugeren ikke er verificeret – generér ny kode og send mail
+    // Hvis brugeren ikke er verificeret - generer ny kode og send mail
     if (!user.is_verified) {
       const code = '' + Math.floor(100000 + Math.random() * 900000);
       const expires = Date.now() + 5 * 60 * 1000;
 
-      db.run(
+      await dbRun(
         'UPDATE users SET verification_code = ?, verification_expires = ? WHERE id = ?',
-        [code, expires, user.id],
-        async (err2) => {
-          if (!err2) {
-            await sendVerificationEmail(email, code);
-          }
-          // gem email i session til verify-flow
-          req.session.verifyEmail = email;
-          return res.redirect('/auth/verify?email=' + encodeURIComponent(email));
-        }
+        [code, expires, user.id]
       );
-      return;
+
+      // Start mailen uden at blokere redirect
+      sendVerificationEmail(email, code).catch((err) =>
+        console.error('Error sending verification email:', err)
+      );
+
+      req.session.verifyEmail = email;
+      return res.redirect('/auth/verify?email=' + encodeURIComponent(email));
     }
 
-    // Bruger er verificeret → log ind
+    // Bruger er verificeret - log ind
     req.session.userId = user.id;
     req.session.firstName = user.first_name;
     res.redirect('/');
-  });
+  } catch (err) {
+    console.error('Login error:', err);
+    // Du kan vælge at vise en generel fejl i stedet
+    res.render('login', { error: 'Der opstod en fejl. Proev igen.' });
+  }
 });
 
-// GET register
+// GET /register
 router.get('/register', requireNotLoggedIn, (req, res) => {
   res.render('register', { error: null });
 });
 
-// POST register
-router.post('/register', requireNotLoggedIn, async (req, res) => {
+// POST /register
+router.post('/register', requireNotLoggedIn, async (req, res, next) => {
   const { email, first_name, password } = req.body;
 
-  // Simpel password-validering
-  if (!/^.{8,}$/.test(password) || !/[A-Z]/.test(password) || !/\d/.test(password)) {
-    return res.render('register', {
-      error: 'Adgangskoden skal være mindst 8 tegn, 1 stort bogstav og 1 tal.'
-    });
-  }
-
-  const hash = await bcrypt.hash(password, 10);
-  const code = '' + Math.floor(100000 + Math.random() * 900000);
-  const expires = Date.now() + 5 * 60 * 1000;
-
-  // Opret bruger med is_verified = 0
-  db.run(
-    'INSERT INTO users (email, first_name, password_hash, is_verified, verification_code, verification_expires) VALUES (?, ?, ?, 0, ?, ?)',
-    [email, first_name, hash, code, expires],
-    async function (err) {
-      if (err) {
-        return res.render('register', { error: 'Email findes allerede.' });
-      }
-
-      await sendVerificationEmail(email, code);
-      req.session.verifyEmail = email;
-      // Redirect til verify-side
-      res.redirect('/auth/verify?email=' + encodeURIComponent(email));
+  try {
+    // Simpel password-validering
+    if (!/^.{8,}$/.test(password) || !/[A-Z]/.test(password) || !/\d/.test(password)) {
+      return res.render('register', {
+        error: 'Adgangskoden skal vaere mindst 8 tegn, 1 stort bogstav og 1 tal.'
+      });
     }
-  );
+
+    const hash = await bcrypt.hash(password, 10);
+    const code = '' + Math.floor(100000 + Math.random() * 900000);
+    const expires = Date.now() + 5 * 60 * 1000;
+
+    await dbRun(
+      'INSERT INTO users (email, first_name, password_hash, is_verified, verification_code, verification_expires) VALUES (?, ?, ?, 0, ?, ?)',
+      [email, first_name, hash, code, expires]
+    );
+
+    // Start mailen uden at blokere redirect
+    sendVerificationEmail(email, code).catch((err) =>
+      console.error('Error sending verification email:', err)
+    );
+
+    req.session.verifyEmail = email;
+    res.redirect('/auth/verify?email=' + encodeURIComponent(email));
+  } catch (err) {
+    console.error('Register error:', err);
+
+    // Hvis du vil skelne unikt email constraint:
+    if (err && err.code === 'SQLITE_CONSTRAINT') {
+      return res.render('register', { error: 'Email findes allerede.' });
+    }
+
+    return res.render('register', { error: 'Der opstod en fejl. Proev igen.' });
+  }
 });
 
-// GET verify
+// GET /verify
 router.get('/verify', requireNotLoggedIn, (req, res) => {
   // Gem email i session, hvis den kommer som query param
   if (req.query.email) {
@@ -145,8 +184,8 @@ router.get('/verify', requireNotLoggedIn, (req, res) => {
   res.render('verify', { email, error: null });
 });
 
-// POST verify
-router.post('/verify', requireNotLoggedIn, (req, res) => {
+// POST /verify
+router.post('/verify', requireNotLoggedIn, async (req, res, next) => {
   const email = req.session.verifyEmail || req.body.email || req.query.email;
   const code = req.body.code;
 
@@ -154,11 +193,9 @@ router.post('/verify', requireNotLoggedIn, (req, res) => {
     return res.render('verify', { error: 'Email mangler', email: '' });
   }
 
-  db.get('SELECT * FROM users WHERE email = ?', [email], (err, user) => {
-    if (err) {
-      console.error('DB error:', err);
-      return res.render('verify', { error: 'Databasefejl', email });
-    }
+  try {
+    const user = await dbGet('SELECT * FROM users WHERE email = ?', [email]);
+
     if (!user) {
       return res.render('verify', { error: 'Bruger ikke fundet', email });
     }
@@ -169,29 +206,28 @@ router.post('/verify', requireNotLoggedIn, (req, res) => {
       return res.render('verify', { error: 'Forkert kode', email });
     }
     if (Date.now() > user.verification_expires) {
-      return res.render('verify', { error: 'Koden er udløbet', email });
+      return res.render('verify', { error: 'Koden er udloebet', email });
     }
 
-    db.run(
+    await dbRun(
       'UPDATE users SET is_verified = 1, verification_code = NULL, verification_expires = NULL WHERE id = ?',
-      [user.id],
-      (err2) => {
-        if (err2) {
-          return res.render('verify', { error: 'Fejl ved bekræftelse', email });
-        }
-
-        // ryd verify-email i session
-        req.session.verifyEmail = null;
-        // vis login-side med besked
-        res.render('login', {
-          error: 'Din email er nu bekræftet. Log ind for at fortsætte.'
-        });
-      }
+      [user.id]
     );
-  });
+
+    // Ryd verify-email i session
+    req.session.verifyEmail = null;
+
+    // Vis login-side med besked
+    res.render('login', {
+      error: 'Din email er nu bekraeftet. Log ind for at fortsaette.'
+    });
+  } catch (err) {
+    console.error('Verify error:', err);
+    return res.render('verify', { error: 'Databasefejl', email });
+  }
 });
 
-// GET logout
+// GET /logout
 router.get('/logout', (req, res) => {
   req.session.destroy(() => {
     res.redirect('/auth/login');
