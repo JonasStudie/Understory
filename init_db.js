@@ -64,10 +64,10 @@ db.serialize(() => {
 });
 
 const reviews = [
-  {event_id: 1, first_name: 'Oliver', experience_date: '2025-01-10', rating: 5, comment: 'Mega hyggelig smagning, god stemning og dygtig vært!', image_url: 'https://ik.imagekit.io/km2xccxuy/ORANGE_4d6b3bb99e_mTH1XBso2.png?tr=h-%2Cw-1500%2Cq-70%2Cdpr-auto%2Cc-fill'},
+  {event_id: 1, first_name: 'Oliver', experience_date: '2025-01-10', rating: 5, comment: 'Mega hyggelig smagning, god stemning og dygtig vært!', image_url: 'https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.whisky.dk%2Fshop%2Fcopenhagen-distillery-18398p.html%3Fsrsltid%3DAfmBOoqW54nQS_-nLMGp18k4aZmW17wKho3cOVHtkDR_YXXILkBBoaC2&psig=AOvVaw0RnW7xQ5Hq3bljLPWTHrOu&ust=1764777613997000&source=images&cd=vfe&opi=89978449&ved=0CBUQjRxqFwoTCLiGtomjn5EDFQAAAAAdAAAAABAV'},
   {event_id: 1, first_name: 'Anna', experience_date: '2025-01-12', rating: 4, comment: 'Rigtig god oplevelse, men der måtte gerne have været lidt mere tid til spørgsmål.'},
-  {event_id: 2, first_name: 'Mads', experience_date: '2025-02-01', rating: 5, comment: 'Gin-workshoppen var klasse, sjovt at blande sin egen gin.'},
-  {event_id: 2, first_name: 'Lise', experience_date: '2025-02-03', rating: 4, comment: 'Godt udvalg af gin'},
+  {event_id: 2, first_name: 'Mads', experience_date: '2025-02-01', rating: 5, comment: 'Gin-workshoppen var klasse, sjovt at blande sin egen gin.', image_url: 'https://ik.imagekit.io/km2xccxuy/ORANGE_4d6b3bb99e_mTH1XBso2.png?tr=h-%2Cw-1500%2Cq-70%2Cdpr-auto%2Cc-fill'},
+  {event_id: 2, first_name: 'Lise', experience_date: '2025-02-03', rating: 4, comment: 'Godt udvalg af gin', image_url:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRuEm76QCBhGGAo9NbTRy01Y8QaVWNl2x1hoQ&s'},
   {event_id: 3, first_name: 'Sofie', experience_date: '2025-03-05', rating: 3, comment: 'Interessant, men lidt for teknisk til mig.'},
   {event_id: 3, first_name: 'Peter', experience_date: '2025-03-07', rating: 5, comment: 'Fantastisk workshop! Lærte en masse om destillation.'}
 ];

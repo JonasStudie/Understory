@@ -1,4 +1,6 @@
 ﻿require('dotenv').config();
+console.log('Efter dotenv i app.js, CLOUDINARY_CLOUD_NAME =', process.env.CLOUDINARY_CLOUD_NAME);
+
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
@@ -6,7 +8,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var session = require('express-session');
 
-
+const cloudinary = require('./config/cloudinary'); 
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
