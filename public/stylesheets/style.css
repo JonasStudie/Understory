@@ -54,7 +54,7 @@ a {
   border: 1px solid #ddd;
   padding: 14px 18px;
   border-radius: 8px;
-  margin-bottom: 14px;
+  margin-top: 20px;
   box-shadow: 0px 2px 4px rgba(0,0,0,0.06);
 }
 
@@ -285,3 +285,4 @@ a[href="/review"] {
 a[href="/review"]:hover {
   color: #000;
 }
+
