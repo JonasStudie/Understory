@@ -6,8 +6,16 @@ const multer = require('multer');
 const upload = multer({ dest: 'uploads/' });
 const cloudinary = require('../config/cloudinary');
 const fs = require('fs').promises; // bruger promise-versionen af fs
+const rateLimit = require('express-rate-limit');
 
 const db = new sqlite3.Database(path.join(__dirname, '..', 'mydb.sqlite'));
+
+//funktionen limiterer antal requests til at undgå spam af anmeldelser
+const reviewLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutter
+  max: 10, // maks 5 requests per IP inden for vinduet
+  message: "For mange anmeldelser fra denne IP, prøv igen senere."
+});
 
 // Små helper-funktioner der laver sqlite3 om til Promises
 function dbAll(sql, params = []) {
@@ -96,7 +104,7 @@ router.get('/:id', async (req, res, next) => {
 });
 
 // POST /review/:id (med billedupload)
-router.post('/:id', upload.single('image'), async (req, res, next) => {
+router.post('/:id', reviewLimiter, upload.single('image'), async (req, res, next) => {
   const eventId = req.params.id;
   const { first_name, experience_date, rating, comment } = req.body;
 
