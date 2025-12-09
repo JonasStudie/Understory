@@ -13,4 +13,3 @@ openssl x509 -req -days 365 -in server.csr -signkey server.key -out server.crt
 
 Tilgå via https://localhost:3000 
 Her vil den sige "forbindelse er ikke sikker", tryk avanceret og herefter tilgå alligevel
-
