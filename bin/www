@@ -6,9 +6,7 @@
 
 var app = require('../app');
 var debug = require('debug')('myapp:server');
-var https = require('https');
-var fs = require('fs');
-var path = require('path');
+var http = require('http');
 
 /**
  * Get port from environment and store in Express.
@@ -18,20 +16,10 @@ var port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
 
 /**
- * Load TLS key and certificate
- * (ligger i projektroden: ../server.key og ../server.crt)
+ * Create HTTP server.
  */
 
-var httpsOptions = {
-  key:  fs.readFileSync(path.join(__dirname, '../server.key')),
-  cert: fs.readFileSync(path.join(__dirname, '../server.crt'))
-};
-
-/**
- * Create HTTPS server.
- */
-
-var server = https.createServer(httpsOptions, app);
+var server = http.createServer(app);
 
 /**
  * Listen on provided port, on all network interfaces.
@@ -90,7 +78,7 @@ function onError(error) {
 }
 
 /**
- * Event listener for HTTPS server "listening" event.
+ * Event listener for HTTP server "listening" event.
  */
 
 function onListening() {
@@ -98,5 +86,5 @@ function onListening() {
   var bind = typeof addr === 'string'
     ? 'pipe ' + addr
     : 'port ' + addr.port;
-  debug('Listening (HTTPS) on ' + bind);
+  debug('Listening on ' + bind);
 }
