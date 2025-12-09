@@ -1,11 +1,8 @@
 const path = require('path');
-const { image } = require('./config/cloudinary');
-const { faker } = require('@faker-js/faker');
 
 const sqlite3 = require('sqlite3').verbose();
 const db = new sqlite3.Database(path.join(__dirname, 'mydb.sqlite'));
 
-// --- REVIEWS (events-oversigten) ---
 db.serialize(() => {
   db.run(`CREATE TABLE IF NOT EXISTS reviews (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -28,28 +25,28 @@ db.serialize(() => {
 });
 
 const events = [
-  { evnt_name: 'Whisey Smagning', company_name: 'Copenhagen Distillery', short_review: 'Kom og smag Whiskey!' },
-  { evnt_name: 'Gin Smagning', company_name: 'Copenhagen Distillery', short_review: 'Kom og smag Gin!' },
+  { evnt_name: 'Whisey Smagning', company_name: 'Copenhagen Distillery', short_review: 'Kom og smag Whiskey!'},
+  { evnt_name: 'Gin Smagning', company_name: 'Copenhagen Distillery', short_review: 'Kom og smag Gin!'},
   { evnt_name: 'Destillations-workshop', company_name: 'Copenhagen Distillery', short_review: 'Kom og lav Gin eller Akvavit' },
 ];
 
+
 db.serialize(() => {
-  const dbStatement = db.prepare(
-    'INSERT INTO reviews (evnt_name, company_name, short_review) VALUES (?, ?, ?)'
-  );
+  const dbStatement = db.prepare("INSERT INTO reviews (evnt_name, company_name, short_review) VALUES (?, ?, ?)");
   events.forEach(event => {
     dbStatement.run(event.evnt_name, event.company_name, event.short_review);
   });
   dbStatement.finalize(err => {
     if (err) {
-      console.error('Error inserting data into reviews:', err);
+      console.error("Error inserting data:", err);
     } else {
-      console.log('Data inserted successfully into reviews');
+      console.log("Data inserted successfully");
     }
+
   });
 });
 
-// --- EVENT_REVIEWS (detaljerede anmeldelser) ---
+
 db.serialize(() => {
   db.run(`
     CREATE TABLE IF NOT EXISTS event_reviews (
@@ -59,72 +56,40 @@ db.serialize(() => {
       experience_date TEXT NOT NULL,
       rating INTEGER NOT NULL CHECK (rating BETWEEN 1 AND 5),
       comment TEXT NOT NULL,
-      image_url image,
       created_at TEXT DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (event_id) REFERENCES reviews(id)
     )
   `);
 });
 
-// Faker-baseret seeding til event_reviews
-const IMAGES_BY_EVENT = {
-  1: [
-    'https://ik.imagekit.io/km2xccxuy/raw_logo_398343ea96_zNT61P17W.png?tr=h-%2Cw-1500%2Cq-70%2Cdpr-auto%2Cc-fill',
-    'https://files.guidedanmark.org/files/382/259725_Copenhagen_Distillery__Mellanie_Gand.jpg'
-  ],
-  2: [
-    'https://ik.imagekit.io/km2xccxuy/ORANGE_4d6b3bb99e_mTH1XBso2.png?tr=h-%2Cw-1500%2Cq-70%2Cdpr-auto%2Cc-fill',
-    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRuEm76QCBhGGAo9NbTRy01Y8QaVWNl2x1hoQ&s'
-  ],
-  3: [
-    'https://www.copenhagendistillery.com/wp-content/uploads/2020/11/Copenhagen-Distillery-Interior-5-1.jpg',
-    'https://ik.imagekit.io/km2xccxuy/01_3000x2000_825a4724c3_0_fYtQd8p.png?tr=h-%2Cw-1500%2Cq-70%2Cdpr-auto%2Cc-fill'
-  ]
-};
-
-function pickRandom(arr) {
-  return arr[Math.floor(Math.random() * arr.length)];
-}
-
-function randomDate2025() {
-  const month = faker.number.int({ min: 1, max: 3 }); // jan–mar
-  const day = faker.number.int({ min: 1, max: 28 });
-  const m = String(month).padStart(2, '0');
-  const d = String(day).padStart(2, '0');
-  return `2025-${m}-${d}`;
-}
+const reviews = [
+  {event_id: 1, first_name: 'Oliver', experience_date: '2025-01-10', rating: 5, comment: 'Mega hyggelig smagning, god stemning og dygtig vært!'},
+  {event_id: 1, first_name: 'Anna', experience_date: '2025-01-12', rating: 4, comment: 'Rigtig god oplevelse, men der måtte gerne have været lidt mere tid til spørgsmål.'},
+  {event_id: 2, first_name: 'Mads', experience_date: '2025-02-01', rating: 5, comment: 'Gin-workshoppen var klasse, sjovt at blande sin egen gin.'},
+  {event_id: 2, first_name: 'Lise', experience_date: '2025-02-03', rating: 4, comment: 'Godt udvalg af gin'},
+  {event_id: 3, first_name: 'Sofie', experience_date: '2025-03-05', rating: 3, comment: 'Interessant, men lidt for teknisk til mig.'},
+  {event_id: 3, first_name: 'Peter', experience_date: '2025-03-07', rating: 5, comment: 'Fantastisk workshop! Lærte en masse om destillation.'}
+];
 
 db.serialize(() => {
-  // juster her hvor hårdt du vil teste:
-  const TOTAL_PER_EVENT = 100; // 3 * 500 = 1500 anmeldelser
-
   const stmt = db.prepare(`
-    INSERT INTO event_reviews (event_id, first_name, experience_date, rating, comment, image_url)
-    VALUES (?, ?, ?, ?, ?, ?)
+    INSERT INTO event_reviews (event_id, first_name, experience_date, rating, comment)
+    VALUES (?, ?, ?, ?, ?)
   `);
 
-  [1, 2, 3].forEach(eventId => {
-    for (let i = 0; i < TOTAL_PER_EVENT; i++) {
-      const firstName = faker.person.firstName();
-      const experienceDate = randomDate2025();
-      const rating = faker.number.int({ min: 1, max: 5 });
-      const comment = faker.lorem.sentence({ min: 6, max: 14 });
-      const imageUrl = pickRandom(IMAGES_BY_EVENT[eventId]);
-
-      stmt.run(eventId, firstName, experienceDate, rating, comment, imageUrl);
-    }
+  reviews.forEach(r => {
+    stmt.run(r.event_id, r.first_name, r.experience_date, r.rating, r.comment);
   });
 
   stmt.finalize(err => {
     if (err) {
-      console.error('Error adding faker event_reviews data', err);
+      console.error('Error adding event_reviews data', err);
     } else {
-      console.log('Success adding faker event_reviews data');
+      console.log('Succes adding event_reviews data');
     }
   });
 });
 
-// --- REGISTRATIONS ---
 db.serialize(() => {
   db.run(`CREATE TABLE IF NOT EXISTS registrations (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -139,5 +104,4 @@ db.serialize(() => {
   )`);
 });
 
-db.close();
-console.log('Database initialized successfully.');
+        db.close();
