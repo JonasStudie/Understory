@@ -1,4 +1,5 @@
-﻿var createError = require('http-errors');
+﻿require('dotenv').config();
+var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
@@ -10,6 +11,7 @@ var usersRouter = require('./routes/users');
 var reviewRouter = require('./routes/review');
 var authRouter = require('./routes/auth');
 var registrationRouter = require('./routes/registration');
+const cloudinary = require('./config/cloudinary'); // Ensure cloudinary is configured
 
 var app = express();
 
@@ -23,12 +25,18 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.get('/js/review-popup.js', (req, res) => {
+  res.sendFile(path.join(__dirname, 'review-popup.js'));
+});
+
 // Session middleware
 app.use(session({
   secret: 'your_secret_key',
   resave: false,
   saveUninitialized: false
 }));
+
+
 
 // Require login for all routes except a whitelist (auth, static, public pages)
 app.use((req, res, next) => {

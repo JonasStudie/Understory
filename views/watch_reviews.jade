@@ -6,8 +6,11 @@ block content
     h3= review.company_name
     p= review.short_review
 
-    //- Tilmeld-knap under beskrivelse
-    a.button(href='/registration/' + review.id) Tilmeld dig begivenheden her
+    //- Knapper under beskrivelse
+    .action
+      a.button(href='/review') Tilbage til oversigten
+      a.button(href='/registration/' + review.id) Tilmeld dig begivenheden her
+      a.button#open-review-popup(href='#') Skriv en anmeldelse
 
   else
     h1 Begivenhed ikke fundet
@@ -28,23 +31,22 @@ block content
         p
           | Stjerner:
           = ' ' + r.rating + '/5⭐'
+
+        if r.image_url && r.image_url.length
+          img.review-image(src=r.image_url, alt='Billede fra oplevelsen')
+
         p= r.comment
         hr
   else
     p Der er ingen anmeldelser for denne begivenhed endnu.
 
-  //- knap der åbner popup
-  .actions
-    a.button(href='/review') Tilbage til oversigten
-    a.button(href='#', id='open-review-popup') Skriv en anmeldelse 
-
-  //- Popup form
+  //- Popup form (kun én pr. side)
   #review-popup.popup.hidden
     .popup-content
       span.popup-close &times;
       h2 Skriv en anmeldelse
 
-      form(action='/review/' + review.id method='POST')
+      form(action='/review/' + review.id method='POST' enctype='multipart/form-data')
         if firstName
           input(type='hidden' name='first_name' value=firstName)
         else if user && user.firstName
@@ -52,13 +54,15 @@ block content
         else if session && session.firstName
           input(type='hidden' name='first_name' value=session.firstName)
         else
-          div
+          .form-group
             label(for='first_name') Fornavn:
             input(type='text' name='first_name' id='first_name' required)
-        div
+
+        .form-group
           label(for='experience_date') Dato for oplevelse:
           input(type='date' name='experience_date' id='experience_date' required)
-        div
+
+        .form-group
           label(for='rating') Antal stjerner (1-5):
           select(name='rating' id='rating' required)
             option(value='') Vælg
@@ -67,32 +71,16 @@ block content
             option(value='3') 3⭐
             option(value='4') 4⭐
             option(value='5') 5⭐
-        div
+
+        .form-group
           label(for='comment') Kommentar:
           textarea(name='comment' id='comment' rows='4' required)
-        button(type='submit') Gem anmeldelse
+
+        .form-group
+          label(for='image') Upload billede fra oplevelsen (valgfrit):
+          input(type='file' name='image' id='image' accept='image/*')
+
+        button.button(type='submit') Gem anmeldelse
 
   //- JS til at åbne/lukke popup
-  script.
-    document.addEventListener('DOMContentLoaded', function() {
-      const openBtn = document.getElementById('open-review-popup');
-      const popup = document.getElementById('review-popup');
-      const closeBtn = document.querySelector('#review-popup .popup-close');
-
-      if (openBtn && popup && closeBtn) {
-        openBtn.addEventListener('click', function(e) {
-          e.preventDefault(); 
-          popup.classList.remove('hidden');
-        });
-
-        closeBtn.addEventListener('click', function() {
-          popup.classList.add('hidden');
-        });
-
-        popup.addEventListener('click', function(e) {
-          if (e.target === popup) {
-            popup.classList.add('hidden');
-          }
-        });
-      }
-    });
+  script(src="/js/popup.js")
