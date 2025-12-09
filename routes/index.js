@@ -20,17 +20,13 @@ function requireLogin(req, res, next) {
 
 /* GET home page. */
 router.get('/', requireLogin, (req, res) => {
-  res.render('index', { title: 'Express123' });
+  const name = req.session && req.session.firstName ? req.session.firstName : 'user';
+  res.render('index', { title: `Velkommen ${name}!` });
 });
 
 /* GET phone page. */
 router.get('/phone', (req, res) => {
   res.render('phone', { title: 'Phone Page' });
-});
-
-/* GET mail page. */
-router.get('/mail', (req, res) => {
-  res.render('mail', { title: 'Mail Page' });
 });
 
 /* POST send message via Twilio */

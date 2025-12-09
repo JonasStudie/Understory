@@ -286,3 +286,29 @@ a[href="/review"]:hover {
   color: #000;
 }
 
+/* Styles til forside */
+.header { display:flex; align-items:center; justify-content:space-between; gap:1rem; padding:1rem 0; }
+.brand { display:flex; align-items:center; gap:0.75rem; }
+.brand h1 { margin:0; font-size:1.6rem; }
+.controls { display:flex; gap:0.5rem; align-items:center; }
+.controls form { background:none; padding:0; box-shadow:none; margin:0; display:inline-block; vertical-align:middle; }
+
+/* Header-specific button class to force identical sizing/alignment */
+.header-btn {
+  display: inline-block;
+  padding: 10px 18px;
+  border-radius: 6px;
+  font-weight: 600;
+  margin: 0;
+  vertical-align: middle;
+  text-decoration: none;
+  box-sizing: border-box;
+}
+.btn.primary { background:#2b8aef; color:#fff; border-color:#2676d9; }
+.btn.primary:hover { background:#2676d9; border-color:#1f5fbf; }
+.btn.danger { background:#ff6b6b; color:#fff; border-color:#e05555; }
+.btn.danger:hover { background:#e05555; border-color:#d24444; }
+.logout:hover { background: #222; border-color: #111; }
+.welcome { margin:1rem 0; color:#333; }
+
+

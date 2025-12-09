@@ -1,13 +1,29 @@
 extends layout
 
 block content
-  .top-bar
-    a.button.top-logout(href='/auth/logout', style='float:right;') Log ud
-  h1= title
-  p Welcome to #{title}
-  a(href='/phone')
-    button Go to Phone Page
-  a(href='/mail')
-    button Go to Mail Page
-  a(href='/review')
-    button Go to Review Page
+  .header
+    .brand
+      h1= title
+      if session && session.firstName
+        small Welcome #{session.firstName}
+    .controls
+      form(method='POST' action='/auth/delete' onsubmit='return confirmDelete(event)')
+          button.btn.danger.header-btn(type='submit') Delete account
+        a.button.logout.header-btn(href='/auth/logout') Log out
+
+  p.welcome Velkommen til Understory — del dine oplevelser og læs andres anmeldelser.
+
+  .controls
+    a(href='/review')
+      button.btn.primary Go to Reviews
+    a(href='/phone')
+      button.btn Phone
+
+  script.
+    function confirmDelete(e) {
+      if (!confirm('Er du sikker på, at du vil slette din konto? Dette kan ikke fortrydes.')) {
+        e.preventDefault();
+        return false;
+      }
+      return true;
+    }
