@@ -90,7 +90,7 @@ router.post('/login', requireNotLoggedIn, (req, res) => {
       return;
     }
 
-    // Bruger er verificeret → log ind
+    // Bruger er verificeret - log ind.
     req.session.userId = user.id;
     req.session.firstName = user.first_name;
     res.redirect('/');
