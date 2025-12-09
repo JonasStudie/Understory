@@ -15,8 +15,8 @@ function requireLogin(req, res, next) {
   if (!req.session || !req.session.userId) {
     return res.redirect('/auth/login');
   }
-  res.render('index', { title: 'Express123' });
-});
+  next();
+}
 
 /* GET phone page. */
 router.get('/phone', function(req, res, next) {
