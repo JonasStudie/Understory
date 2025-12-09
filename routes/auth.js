@@ -117,7 +117,7 @@ router.post('/login', requireNotLoggedIn, async (req, res, next) => {
       return res.redirect('/auth/verify?email=' + encodeURIComponent(email));
     }
 
-    // Bruger er verificeret - log ind
+    // Bruger er verificeret - log ind.
     req.session.userId = user.id;
     req.session.firstName = user.first_name;
     res.redirect('/');
