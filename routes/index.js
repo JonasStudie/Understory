@@ -1,3 +1,4 @@
+// routes/index.js
 const express = require('express');
 const router = express.Router();
 const twilio = require('twilio');
@@ -10,7 +11,8 @@ const twilioPhoneNumber = process.env.TWILIO_PHONE_NUMBER;
 
 const client = twilio(accountSid, authToken);
 
-// Helper middleware: kræver login for sider der skal beskyttes
+// (valgfrit) lokal requireLogin – din globale middleware i app.js beskytter allerede alle routes,
+// men det skader ikke at have den her også hvis du vil være eksplicit.
 function requireLogin(req, res, next) {
   if (!req.session || !req.session.userId) {
     return res.redirect('/auth/login');
@@ -18,18 +20,26 @@ function requireLogin(req, res, next) {
   next();
 }
 
+/* GET home page. */
+router.get('/', requireLogin, (req, res) => {
+  res.render('index', {
+    title: 'Understory',
+    firstName: req.session.firstName || null
+  });
+});
+
 /* GET phone page. */
-router.get('/phone', function(req, res, next) {
+router.get('/phone', requireLogin, (req, res) => {
   res.render('phone', { title: 'Phone Page' });
 });
 
 /* GET mail page. */
-router.get('/mail', function(req, res, next) {
+router.get('/mail', requireLogin, (req, res) => {
   res.render('mail', { title: 'Mail Page' });
 });
 
 /* POST send message via Twilio */
-router.post('/send-message', async (req, res) => {
+router.post('/send-message', requireLogin, async (req, res) => {
   const { name, phone } = req.body;
 
   if (!name || !phone) {

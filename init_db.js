@@ -12,16 +12,16 @@ function pickRandom(arr) {
 // Billeder per event_id – ret til dine egne URLs
 const IMAGES_BY_EVENT = {
   1: [
-    'https://example.com/images/event1-1.jpg',
-    'https://example.com/images/event1-2.jpg'
+    'https://res.cloudinary.com/depqfxiu7/image/upload/v1765289413/Rare_b3_power_3000_2d0d210a5a_zB4-aZ4_e_xc27p9.jpg',
+    'https://res.cloudinary.com/depqfxiu7/image/upload/v1765289434/raw_whisky_Copenhagen_Distillery_mbbnmm.jpg'
   ],
   2: [
-    'https://example.com/images/event2-1.jpg',
-    'https://example.com/images/event2-2.jpg'
+    'https://res.cloudinary.com/depqfxiu7/image/upload/v1765289367/shopping_so1sxx.webp',
+    'https://res.cloudinary.com/depqfxiu7/image/upload/v1765289335/shopping_pe0q1z.webp'
   ],
   3: [
-    'https://example.com/images/event3-1.jpg',
-    'https://example.com/images/event3-2.jpg'
+    'https://res.cloudinary.com/depqfxiu7/image/upload/v1765289461/259725_Copenhagen_Distillery__Mellanie_Gand_bkstnk.jpg',
+    'https://res.cloudinary.com/depqfxiu7/image/upload/v1765289465/copenhagen_distillery_interior_02-800x591_mfguic.jpg'
   ]
 };
 
@@ -101,7 +101,7 @@ const reviews = [
     experience_date: '2025-01-10',
     rating: 5,
     comment: 'Mega hyggelig smagning, god stemning og dygtig vært!',
-    image_url: 'https://ik.imagekit.io/km2xccxuy/ORANGE_4d6b3bb99e_mTH1XBso2.png?tr=h-%2Cw-1500%2Cq-70%2Cdpr-auto%2Cc-fill'
+    image_url: 'https://res.cloudinary.com/depqfxiu7/image/upload/v1765289413/Rare_b3_power_3000_2d0d210a5a_zB4-aZ4_e_xc27p9.jpg'
   },
   {
     event_id: 1,
@@ -162,7 +162,7 @@ db.serialize(() => {
   const eventIds = [1, 2, 3];
 
   eventIds.forEach(eventId => {
-    const numReviews = faker.number.int({ min: 3, max: 8 });
+    const numReviews = faker.number.int({ min: 25, max: 50 });
 
     for (let i = 0; i < numReviews; i++) {
       const firstName = faker.person.firstName();

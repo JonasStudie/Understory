@@ -5,38 +5,91 @@ const path = require('path');
 
 const db = new sqlite3.Database(path.join(__dirname, '..', 'mydb.sqlite'));
 
-router.get('/:id', function(req, res, next) {
-  const id = req.params.id;
-
-  db.get('SELECT * FROM reviews WHERE id = ?', [id], (err, row) => {
-    if (err) return next(err);
-    if (!row) return res.status(404).send('Event ikke fundet');
-
-    res.render('registerevent', {title: 'Tilmelding', eventId: id, event: row});
+// --- Helper-funktioner til Promises ---
+function dbGet(sql, params = []) {
+  return new Promise((resolve, reject) => {
+    db.get(sql, params, (err, row) => {
+      if (err) return reject(err);
+      resolve(row);
+    });
   });
+}
+
+function dbRun(sql, params = []) {
+  return new Promise((resolve, reject) => {
+    db.run(sql, params, function (err) {
+      if (err) return reject(err);
+      resolve(this); // this.lastID, this.changes hvis du får brug for det
+    });
+  });
+}
+
+// GET /registration/:id
+router.get('/:id', async (req, res, next) => {
+  try {
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id)) {
+      return res.status(400).send('Ugyldigt event-id');
+    }
+
+    const row = await dbGet(
+      'SELECT * FROM reviews WHERE id = ?',
+      [id]
+    );
+
+    if (!row) {
+      return res.status(404).send('Event ikke fundet');
+    }
+
+    res.render('registerevent', {
+      title: 'Tilmelding',
+      eventId: id,
+      event: row
+    });
+  } catch (err) {
+    next(err);
+  }
 });
 
-router.post('/:id', function(req, res, next) {
-  const eventId = req.params.id;
-  const { full_name, phone, email, event_date } = req.body;
-
-  // Checkbox: hvis checked → '1', ellers undefined
-  const sms_reminder = req.body.sms_reminder ? 1 : 0;
-
-  db.run(`
-    INSERT INTO registrations (event_id, full_name, phone, email, event_date, sms_reminder)
-    VALUES (?, ?, ?, ?, ?, ?)
-  `, [eventId, full_name, phone, email, event_date, sms_reminder], function(err) {
-    if (err) {
-      console.error(err);
-      return next(err);
+// POST /registration/:id
+router.post('/:id', async (req, res, next) => {
+  try {
+    const eventId = Number(req.params.id);
+    if (!Number.isInteger(eventId)) {
+      return res.status(400).send('Ugyldigt event-id');
     }
+
+    const { full_name, phone, email, event_date } = req.body;
+    const sms_reminder = req.body.sms_reminder ? 1 : 0;
+
+    await dbRun(
+      `
+      INSERT INTO registrations (
+        event_id, 
+        full_name, 
+        phone, 
+        email, 
+        event_date, 
+        sms_reminder
+      )
+      VALUES (?, ?, ?, ?, ?, ?)
+      `,
+      [
+        eventId,
+        full_name || null,
+        phone || null,
+        email || null,
+        event_date || null,
+        sms_reminder
+      ]
+    );
 
     console.log('Ny tilmelding med sms_reminder =', sms_reminder);
     res.redirect('/review/' + eventId);
-  });
+  } catch (err) {
+    console.error('Fejl ved oprettelse af tilmelding:', err);
+    next(err);
+  }
 });
-
-
 
 module.exports = router;

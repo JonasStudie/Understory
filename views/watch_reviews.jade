@@ -5,6 +5,8 @@ block content
     h1= review.evnt_name
     h3= review.company_name
     p= review.short_review
+    div#average-rating(data-event=review.id) Henter gennemsnit...
+
 
     //- Knapper under beskrivelse
     .action
@@ -84,3 +86,5 @@ block content
 
   //- JS til at åbne/lukke popup
   script(src="/js/popup.js")
+  script(src="/js/review-average.js")
+
