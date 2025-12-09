@@ -1,6 +1,9 @@
 body {
   padding: 50px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  background-color: #f0f7ff; /* very light blue background for all endpoints */
+  min-height: 100vh;
+  margin: 0;
 }
 
 a {

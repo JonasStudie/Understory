@@ -26,7 +26,7 @@ router.get('/', function(req, res, next) {
 
 
     res.render('review', {
-      title: 'Review Page',
+      title: 'Anmeldelser',
       reviews: rows
     });
   });

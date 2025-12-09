@@ -2,13 +2,15 @@ extends layout
 
 block content
   h1= title
-  p This is the phone page.
+  p Registrer dit telefonnummer for at modtage opdateringer fra os!
   form(method='POST', action='/send-message')
     div
-      label(for='name') Name:
+      label(for='name') Dit navn
+      br
       input(type='text', id='name', name='name', required)
     div
-      label(for='phone') Phone Number:
+      label(for='phone') Dit nummer
+      br
       input(type='tel', id='phone', name='phone', required)
     button(type='submit') Send mig meddelelse
   a(href='/')

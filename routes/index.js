@@ -16,18 +16,14 @@ router.get('/', function(req, res, next) {
   if (!req.session || !req.session.userId) {
     return res.redirect('/auth/login');
   }
-  res.render('index', { title: 'Express123' });
+  res.render('index', { title: 'Velkommen til Understory' });
 });
 
 /* GET phone page. */
 router.get('/phone', function(req, res, next) {
-  res.render('phone', { title: 'Phone Page' });
+  res.render('phone', { title: 'Registrering' });
 });
-
-/* GET mail page. */
-router.get('/mail', function(req, res, next) {
-  res.render('mail', { title: 'Mail Page' });
-});
+// `/mail` endpoint removed per request
 
 /* POST send message via Twilio */
 router.post('/send-message', function(req, res, next) {
