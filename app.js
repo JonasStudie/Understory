@@ -24,11 +24,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-
-app.get('/js/review-popup.js', (req, res) => {
-  res.sendFile(path.join(__dirname, 'review-popup.js'));
+/*
+app.get('/js/popup.js', (req, res) => {
+  res.sendFile(path.join(__dirname, 'popup.js'));
 });
-
+*/
 // Session middleware
 app.use(session({
   secret: 'your_secret_key',
@@ -48,6 +48,8 @@ app.use((req, res, next) => {
   const isPublic = req.path.startsWith('/auth') ||
     req.path.startsWith('/stylesheets') ||
     req.path.startsWith('/public') ||
+    req.path.startsWith('/images') ||
+    req.path.startsWith('/js') ||
     req.path.startsWith('/favicon');
 
   if (isPublic) return next();
@@ -63,6 +65,7 @@ app.use('/registration', registrationRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
+  console.log('404 for path:', req.method, req.path);
   next(createError(404));
 });
 
