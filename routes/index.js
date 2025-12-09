@@ -48,7 +48,7 @@ router.post('/send-message', requireLogin, async (req, res) => {
 
   try {
     await client.messages.create({
-      body: `Hej ${name}, velkommen til Understory! Vi er glade for at have dig med. Klik på linket for at komme i gang: `,
+      body: `Hej ${name}, velkommen til Understory! Vi er glade for at have dig med. Klik på linket for at komme i gang med at anmelde: https://understory.foo/review `,
       from: twilioPhoneNumber,
       to: phone
     });
