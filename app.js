@@ -1,21 +1,15 @@
-﻿require('dotenv').config();
-
-var createError = require('http-errors');
+﻿var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var session = require('express-session');
 
-const cloudinary = require('./config/cloudinary'); 
-
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var reviewRouter = require('./routes/review');
 var authRouter = require('./routes/auth');
 var registrationRouter = require('./routes/registration');
-const { default: helmet } = require('helmet');
-
 
 var app = express();
 
@@ -28,23 +22,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(helmet());
-
-app.use(
-  helmet({
-    contentSecurityPolicy: {
-      useDefaults: true,
-      directives: {
-        "img-src": ["'self'", "data:", "https:"]
-      },
-    },
-  })
-);
-
-// Gør kun review-popup.js tilgængelig som statisk fil
-app.get('/js/review-popup.js', (req, res) => {
-  res.sendFile(path.join(__dirname, 'review-popup.js'));
-});
 
 // Session middleware
 app.use(session({
