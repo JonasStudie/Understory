@@ -11,7 +11,7 @@ const twilioPhoneNumber = process.env.TWILIO_PHONE_NUMBER;
 
 const client = twilio(accountSid, authToken);
 
-// (valgfrit) lokal requireLogin – din globale middleware i app.js beskytter allerede alle routes,
+// (valgfrit) lokal requireLogin – globale middleware i app.js beskytter allerede alle routes,
 // men det skader ikke at have den her også hvis du vil være eksplicit.
 function requireLogin(req, res, next) {
   if (!req.session || !req.session.userId) {
@@ -31,11 +31,6 @@ router.get('/', requireLogin, (req, res) => {
 /* GET phone page. */
 router.get('/phone', requireLogin, (req, res) => {
   res.render('phone', { title: 'Phone Page' });
-});
-
-/* GET mail page. */
-router.get('/mail', requireLogin, (req, res) => {
-  res.render('mail', { title: 'Mail Page' });
 });
 
 /* POST send message via Twilio */
