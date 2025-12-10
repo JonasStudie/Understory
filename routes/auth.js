@@ -220,7 +220,7 @@ router.post('/verify', requireNotLoggedIn, async (req, res) => {
 
     // Vis login-side med besked
     res.render('login', {
-      error: 'Din email er nu bekraeftet. Log ind for at fortsaette.'
+      error: 'Din email er nu bekraeftet. Log ind for at fortsætte.'
     });
   } catch (err) {
     console.error('Verify error:', err);
