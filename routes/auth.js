@@ -235,4 +235,25 @@ router.get('/logout', (req, res) => {
   });
 });
 
+// POST /delete - delete current user's account
+router.post('/delete', async (req, res) => {
+  const userId = req.session && req.session.userId;
+  if (!userId) {
+    return res.redirect('/auth/login');
+  }
+
+  try {
+    await dbRun('DELETE FROM users WHERE id = ?', [userId]);
+
+    // Destroy session and redirect to login
+    req.session.destroy(() => {
+      res.redirect('/auth/login');
+    });
+  } catch (err) {
+    console.error('Error deleting user:', err);
+    // On error, keep the user logged in and show an error on the index
+    res.status(500).render('index', { error: 'Kunne ikke slette kontoen. Prøv igen.' });
+  }
+});
+
 module.exports = router;

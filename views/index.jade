@@ -2,10 +2,23 @@ extends layout
 
 block content
   .top-bar
-    a.button.top-logout(href='/auth/logout', style='float:right;') Log ud
+    .top-controls
+      form(method='POST' action='/auth/delete' onsubmit='return confirmDelete(event)')
+        button.button.top-delete(type='submit') Slet konto
+        a.button.top-logout(href='/auth/logout') Log ud
+
   h1= title
   p Her kan du se og lave anmeldelser, eller registrere dit telefonnummer og få opdateringer fra os
   a(href='/phone')
     button Registrer telefonnummer
   a(href='/review')
     button Se og lav anmeldelser 
+
+  script.
+    function confirmDelete(e) {
+      if (!confirm('Er du sikker på, at du vil slette din konto? Dette kan ikke fortrydes.')) {
+        e.preventDefault();
+        return false;
+      }
+      return true;
+    }

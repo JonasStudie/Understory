@@ -287,3 +287,16 @@ a[href="/review"] {
 a[href="/review"]:hover {
   color: #000;
 }
+
+/* Log ud og delete account knapper */
+.top-bar {
+  float: right;
+}
+form .button.top-delete {
+  background: #ff4d4f;
+  border-color: #ff4d4f;
+}
+form .button.top-delete:hover {
+  background: #d93638;
+  border-color: #d93638;
+}
