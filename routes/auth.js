@@ -215,7 +215,7 @@ router.post('/delete', async (req, res) => {
   } catch (err) {
     console.error('Error deleting user:', err);
     // On error, keep the user logged in and show an error on the index
-    res.status(500).render('index', { error: 'Kunne ikke slette kontoen. Proev igen.' });
+    res.status(500).render('index', { error: 'Kunne ikke slette kontoen. Prøv igen.' });
   }
 });
 
