@@ -275,7 +275,6 @@ a[href="/review"] {
 a[href="/review"]:hover {
   color: #000;
 }
-<<<<<<< HEAD
 
 /* Styles til forside */
 .header { display:flex; align-items:center; justify-content:space-between; gap:1rem; padding:1rem 0; }
@@ -301,7 +300,3 @@ a[href="/review"]:hover {
 .btn.danger:hover { background:#e05555; border-color:#d24444; }
 .logout:hover { background: #222; border-color: #111; }
 .welcome { margin:1rem 0; color:#333; }
-
-
-=======
->>>>>>> 25e85696d29b4bc2a74b8a63786abf9a624577b2

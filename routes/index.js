@@ -16,32 +16,27 @@ router.get('/', function(req, res, next) {
   if (!req.session || !req.session.userId) {
     return res.redirect('/auth/login');
   }
-<<<<<<< HEAD
   next();
-}
+});
 
 /* GET home page. */
 router.get('/', requireLogin, (req, res) => {
   const name = req.session && req.session.firstName ? req.session.firstName : 'user';
   res.render('index', { title: `Velkommen ${name}!` });
-=======
-  res.render('index', { title: 'Express123' });
->>>>>>> 25e85696d29b4bc2a74b8a63786abf9a624577b2
 });
+
+function requireLogin(req, res, next) {
+  if (req.session && req.session.userId) {
+    return next();
+  }
+  return res.redirect('/auth/login');
+};
 
 /* GET phone page. */
 router.get('/phone', function(req, res, next) {
   res.render('phone', { title: 'Phone Page' });
 });
 
-<<<<<<< HEAD
-=======
-/* GET mail page. */
-router.get('/mail', function(req, res, next) {
-  res.render('mail', { title: 'Mail Page' });
-});
-
->>>>>>> 25e85696d29b4bc2a74b8a63786abf9a624577b2
 /* POST send message via Twilio */
 router.post('/send-message', function(req, res, next) {
   const { name, phone } = req.body;
