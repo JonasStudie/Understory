@@ -4,9 +4,9 @@
  * Module dependencies.
  */
 
-var app   = require('../app');              // Din Express-app
+var app   = require('../app'); 
 var debug = require('debug')('myapp:server');
-var https = require('https');               // HTTPS, ikke http
+var https = require('https'); // HTTPS, ikke http
 var fs    = require('fs');
 var path  = require('path');
 
@@ -26,6 +26,7 @@ var httpsOptions = {
   key:  fs.readFileSync(path.join(__dirname, '../server.key')),
   cert: fs.readFileSync(path.join(__dirname, '../server.crt'))
 };
+
 
 /**
  * Create HTTPS server.
